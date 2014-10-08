@@ -22,5 +22,7 @@ int main()
 
 	treap->printVertical();
 
+	system("pause");
+
 	return 0;
 }
