@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;//
 
@@ -14,15 +16,21 @@ struct TreapNode
 	TreapNode * rightChild;//右孩子;
 };
 
+//华丽的分割线;
+void cutline()
+{
+	cout << "-------------------------------------------------------" << endl;
+}
+
 //树堆类;
 class Treap
 {
 private:
-	TreapNode * root;             //指向根节点的指针;
-	vector<int> priorityGenerator;  //随机优先级的数组;
-	static const int MAX_NODE = 1000;    //最多的节点数;
-	int currentNodeNum;           //当前节点数量;
-	queue<TreapNode*> nodes;
+	TreapNode * root;                //指向根节点的指针;
+	vector<int> priorityGenerator;   //随机优先级的数组;
+	static const int MAX_NODE = 1000;//最多的节点数;
+	int currentNodeNum;              //当前节点数量;
+	vector<TreapNode*> nodes;
 
 	//销毁方法;
 	void destroy(TreapNode *& node)
@@ -125,7 +133,7 @@ private:
 			deleteNode(node->rightChild, data);
 		}
 	}
-	//打印树堆;
+	//横向打印树堆;
 	void print(TreapNode *& node, int spaceNum) const
 	{
 		if (node == NULL)
@@ -147,18 +155,73 @@ private:
 			print(node->rightChild, spaceNum + 1);
 		}
 	}
-	//BFS
+	//利用BFS纵向打印树堆;
 	void treapBFS()
 	{
 		if (this->root == NULL)
 			return;
-		queue<TreapNode*> temp;
-		TreapNode * node = this->root;
-		temp.push(node);
+		queue<TreapNode*> temp;       //临时队列，用于BFS;
+		TreapNode * node = this->root;//根节点;
+		temp.push(node);              //保存根节点;
+		int notnullnum = 1;           //记录非空节点的个数;
 		while (!temp.empty())
 		{
-			
+			TreapNode * tempNode = temp.front();
+			temp.pop();
+
+			//如果没有非空节点，不继续处理，避免无限循环;
+			if (notnullnum > 0)
+			{
+				this->nodes.push_back(tempNode);
+
+				//为了打印格式的整齐，增加空节点;
+				if (tempNode == NULL)
+				{
+					temp.push(NULL);
+					temp.push(NULL);
+				}
+				else
+				{
+					--notnullnum;
+					if (tempNode->leftChild != NULL)
+						++notnullnum;
+					if (tempNode->rightChild != NULL)
+						++notnullnum;
+					temp.push(tempNode->leftChild);
+					temp.push(tempNode->rightChild);
+				}
+			}
 		}
+
+		//增加一定个数的空节点，使树堆成为完全二叉树;
+		int size = this->nodes.size();
+		int index = 1;
+		while (index < size)
+			index *= 2;
+		while (size < index - 1)
+		{
+			this->nodes.push_back(NULL);
+			++ size;
+		}
+	}
+	
+	//以一个节点为起点，找最小值;
+	int findMin(TreapNode * node)
+	{
+		if (node == NULL)
+			return -1;
+		while (node->leftChild != NULL)
+			node = node->leftChild;
+		return node->data;
+	}
+	//以一个节点为起点，找最大值;
+	int findMax(TreapNode * node)
+	{
+		if (node == NULL)
+			return -1;
+		while (node->rightChild != NULL)
+			node = node->rightChild;
+		return node->data;
 	}
 	
 public:
@@ -190,29 +253,63 @@ public:
 	{
 		this->deleteNode(this->root, data);
 	}
-	//打印树堆;
-	void print()
+	//横向打印树堆;
+	void printHorizontal()
 	{
 		print(this->root, 0);
 	}
 	//返回最小值;
 	int findMin()
 	{
-		if (this->root == NULL)
-			return -1;
-		TreapNode * node = this->root;
-		while (node->leftChild != NULL)
-			node = node->leftChild;
-		return node->data;
+		return findMin(this->root);
 	}
 	//返回最大值;
 	int findMax()
 	{
+		return findMax(this->root);
+	}
+	//返回根节点的前驱节点;
+	int rootPred()
+	{
 		if (this->root == NULL)
 			return -1;
-		TreapNode * node = this->root;
-		while (node->rightChild != NULL)
-			node = node->rightChild;
-		return node->data;
+		return findMax(this->root->leftChild);
+	}
+	//返回根节点的后继节点;
+	int rootSucc()
+	{
+		if (this->root == NULL)
+			return -1;
+		return findMin(this->root->rightChild);
+	}
+	//纵向打印树堆;
+	void printVertical()
+	{
+		this->treapBFS();
+		int size = this->nodes.size();
+		if (size == 0)
+			return;
+		int index = 1;
+		int begin = 0;
+		int end = begin + 1;
+		do
+		{
+			int spacenum = (size - index - index + 1) / 2;
+			for (int i = 0; i < spacenum; ++i)
+				cout << " ";
+			for (int i = begin; i < end; ++ i)
+			{
+				TreapNode * node = this->nodes[i];
+				if (node == NULL)
+					cout << "*";
+				else
+					cout << node->data;
+				cout << " ";
+			}
+			cout << endl; 
+			begin = end;
+			index *= 2;
+			end += index;
+		} while (end <= size);
 	}
 };
