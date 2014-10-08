@@ -11,5 +11,8 @@ int main()
 
 	cout << treap->findMax();
 	cout << treap->findMin();
+
+	cout<<endl;
+
 	return 0;
 }
