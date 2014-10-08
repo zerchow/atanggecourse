@@ -20,7 +20,7 @@ class Treap
 private:
 	TreapNode * root;             //指向根节点的指针;
 	vector<int> priorityGenerator;  //随机优先级的数组;
-	const int MAX_NODE = 1000;    //最多的节点数;
+	static const int MAX_NODE = 1000;    //最多的节点数;
 	int currentNodeNum;           //当前节点数量;
 	queue<TreapNode*> nodes;
 
