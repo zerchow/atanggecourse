@@ -2,17 +2,25 @@
 
 int main()
 {
+	srand((unsigned)time(NULL));
+
 	Treap * treap = new Treap();
 
 	for (int i = 0; i < 10; ++i)
-		treap->insertNode(i);
+		treap->insertNode(rand() % 100);
 
-	treap->print();
+	treap->printHorizontal();
 
-	cout << treap->findMax();
-	cout << treap->findMin();
+	cutline();
 
-	cout<<endl;
+	cout << "最大值 ：" << treap->findMax() << endl;
+	cout << "最小值 ：" << treap->findMin() << endl;
+	cout << "根前驱 ：" << treap->rootPred() << endl;
+	cout << "根后继 ：" << treap->rootSucc() << endl;
+
+	cutline();
+
+	treap->printVertical();
 
 	return 0;
 }
