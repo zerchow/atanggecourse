@@ -108,7 +108,7 @@ private:
 					node = node->leftChild;
 				else
 					node = node->rightChild;
-				delete node;
+				delete tempNode;
 			}
 			else
 			{
@@ -160,6 +160,7 @@ private:
 	{
 		if (this->root == NULL)
 			return;
+		this->nodes.clear();          //清空;
 		queue<TreapNode*> temp;       //临时队列，用于BFS;
 		TreapNode * node = this->root;//根节点;
 		temp.push(node);              //保存根节点;
@@ -256,6 +257,7 @@ public:
 	//横向打印树堆;
 	void printHorizontal()
 	{
+		cout<<"横向打印："<<endl;
 		print(this->root, 0);
 	}
 	//返回最小值;
@@ -285,6 +287,7 @@ public:
 	//纵向打印树堆;
 	void printVertical()
 	{
+		cout<<"纵向打印："<<endl;
 		this->treapBFS();
 		int size = this->nodes.size();
 		if (size == 0)
