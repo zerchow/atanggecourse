@@ -228,7 +228,7 @@ private:
 		//增加一定个数的空节点，使树堆成为完全二叉树;
 		int size = this->nodes.size();
 		int index = 1;
-		while (index < size)
+		while (index <= size)
 			index *= 2;
 		while (size < index - 1)
 		{
