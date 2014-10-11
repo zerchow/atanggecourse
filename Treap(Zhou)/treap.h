@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 
-using namespace std;//
+using namespace std;
 
 //节点结构;
 struct TreapNode
@@ -43,7 +43,7 @@ private:
 		node = NULL;
 	}
 
-	//产生一个待插入节点;
+	//产生一个待插入节点（随机优先权）;
 	TreapNode * generateDefaultNode(int data)
 	{
 		TreapNode * node = new TreapNode();                               //创建一个新的节点;
@@ -51,6 +51,17 @@ private:
 		node->priority = this->priorityGenerator[this->currentNodeNum ++];//设置节点优先级;
 		node->leftChild = NULL;                                           //设置节点左子树;
 		node->rightChild = NULL;                                          //设置节点右子树;
+		return node;
+	}
+
+	//产生一个待插入节点（设定优先权）;
+	TreapNode * generateSpecialNode(int data, int priority)
+	{
+		TreapNode * node = new TreapNode();//创建一个新的节点;
+		node->data = data;                 //设置节点数据值;
+		node->priority = priority;         //设置节点优先级;
+		node->leftChild = NULL;            //设置节点左子树;
+		node->rightChild = NULL;           //设置节点右子树;
 		return node;
 	}
 
@@ -74,7 +85,7 @@ private:
 		leftChild->rightChild = node;
 		node = leftChild;
 	}
-	//插入一个节点;
+	//插入一个节点（随机优先权）;
 	void insertNode(TreapNode *& node, const int data)
 	{
 		if (node == NULL)
@@ -90,6 +101,26 @@ private:
 		else
 		{
 			this->insertNode(node->rightChild, data);
+			if (node->priority > node->rightChild->priority)
+				this->leftRotate(node);
+		}
+	}
+	//插入一个节点（设定优先权）;
+	void insertNode(TreapNode *& node, const int data, const int priority)
+	{
+		if (node == NULL)
+		{
+			node = this->generateSpecialNode(data, priority);
+		}
+		else if (node->data >= data)
+		{
+			this->insertNode(node->leftChild, data, priority);
+			if (node->priority > node->leftChild->priority)
+				this->rightRotate(node);
+		}
+		else
+		{
+			this->insertNode(node->rightChild, data, priority);
 			if (node->priority > node->rightChild->priority)
 				this->leftRotate(node);
 		}
@@ -224,6 +255,24 @@ private:
 			node = node->rightChild;
 		return node->data;
 	}
+	//以一个节点为起点，查找某个值;
+	TreapNode * findNode(TreapNode * node, const int data)
+	{
+		TreapNode * result = NULL;
+		while (node != NULL)
+		{
+			if (node->data < data)
+				node = node->rightChild;
+			else if (node->data > data)
+				node = node->leftChild;
+			else
+			{
+				result = node;
+				break;
+			}
+		}
+		return result;
+	}
 	
 public:
 
@@ -283,6 +332,32 @@ public:
 		if (this->root == NULL)
 			return -1;
 		return findMin(this->root->rightChild);
+	}
+	//查找某个节点;
+	void findNode(const int data)
+	{
+		TreapNode * node = this->findNode(this->root, data);
+		if (node == NULL)
+			cout << "找不到节点！" << endl;
+		else
+			cout << "节点值：" << node->data << "，节点优先权：" << node->priority << endl;
+	}
+	//更新某个节点;
+	bool updateNode(const int oldData, const int newData)
+	{
+		TreapNode * node = this->findNode(this->root, oldData);
+		if (node == NULL)
+		{
+			cout << "找不到节点！" << endl;
+			return false;
+		}
+		else
+		{
+			int priority = node->priority;
+			this->deleteNode(oldData);
+			this->insertNode(this->root, newData, priority);
+			return true;
+		}
 	}
 	//纵向打印树堆;
 	void printVertical()
